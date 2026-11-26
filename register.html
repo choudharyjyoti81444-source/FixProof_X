@@ -1,0 +1,127 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Create Account | FixProof X</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="auth-page">
+
+    <header class="navbar">
+        <a href="{{ url_for('home') }}" class="logo">
+            <span class="logo-icon">F</span>
+            FixProof <span class="accent">X</span>
+        </a>
+
+        <a href="{{ url_for('home') }}" class="btn btn-outline">
+            Back to Home
+        </a>
+    </header>
+
+    <main class="auth-container">
+
+        <section class="auth-card">
+
+            <div class="auth-icon">+</div>
+
+            <span class="eyebrow">JOIN FIXPROOF X</span>
+
+            <h1>Create Your Account</h1>
+
+            <p class="auth-description">
+                Create an account to start reviewing website security.
+            </p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('register') }}">
+
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Enter your full name"
+                        autocomplete="name"
+                        maxlength="100"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email address"
+                        autocomplete="email"
+                        maxlength="254"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Minimum 8 characters"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+                </div>
+
+                <div class="form-check">
+                    <input
+                        type="checkbox"
+                        id="terms"
+                        required
+                    >
+
+                    <label for="terms">
+                        I agree to use FixProof X responsibly and scan
+                        only websites I am authorized to assess.
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">
+                    Create Account
+                </button>
+
+            </form>
+
+            <div class="auth-footer">
+                Already have an account?
+                <a href="{{ url_for('login') }}">Login here</a>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <p>FixProof X — Intelligent Web Security Platform</p>
+    </footer>
+
+</body>
+</html>

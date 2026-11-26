@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan Report | FixProof X</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .technology-card {
+            background: #101a2b;
+            border: 1px solid rgba(148,163,184,.15);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 12px;
+        }
+
+        .technology-card h3 {
+            color: #29d9f5;
+            margin: 0 0 10px;
+        }
+
+        .technology-card p {
+            color: #aab8cc;
+            margin: 6px 0;
+            font-size: 13px;
+        }
+
+        .risk-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .risk-summary-item {
+            padding: 16px;
+            border-radius: 10px;
+            background: #101a2b;
+            border: 1px solid rgba(148,163,184,.15);
+        }
+
+        .risk-summary-item strong {
+            display: block;
+            font-size: 22px;
+            color: #29d9f5;
+        }
+
+        .risk-summary-item span {
+            color: #aab8cc;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body class="result-page">
+
+<header class="result-navbar">
+    <a href="{{ url_for('dashboard') }}" class="logo">
+        <span class="logo-icon">F</span>
+        FixProof <span class="accent">X</span>
+    </a>
+
+    <nav>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
+    </nav>
+</header>
+
+<main class="result-container">
+
+    <div class="result-heading">
+        <div>
+            <span class="eyebrow">SECURITY ANALYSIS</span>
+            <h1>Scan Report</h1>
+            <p>Review your website security configuration results.</p>
+        </div>
+
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline">
+            ← Dashboard
+        </a>
+    </div>
+
+    <section class="report-summary">
+        <div class="summary-info">
+            <span class="eyebrow">SCANNED WEBSITE</span>
+            <h2>{{ data.url }}</h2>
+            <p>Scan Date: {{ data.created_at }}</p>
+        </div>
+
+        <div class="score-card">
+            <span>Security Score</span>
+
+            <div class="score-value">
+                {{ data.score }}<small>/100</small>
+            </div>
+
+            <span class="risk-badge risk-{{ data.risk_level|lower }}">
+                {{ data.risk_level }} Risk
+            </span>
+        </div>
+    </section>
+
+    <section class="checks-section">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">SMART RISK ENGINE</span>
+                <h2>Risk Summary</h2>
+                <p>Overview of observed security check results.</p>
+            </div>
+        </div>
+
+        <div class="risk-summary-grid">
+            {% for key, value in data.risk_summary.items() %}
+            <div class="risk-summary-item">
+                <strong>{{ value }}</strong>
+                <span>{{ key }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="checks-section">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">TECHNOLOGY DETECTOR</span>
+                <h2>Possible Technology Indicators</h2>
+                <p>Detected from available HTTP response headers.</p>
+            </div>
+        </div>
+
+        {% if data.technologies %}
+            {% for tech in data.technologies %}
+            <article class="technology-card">
+                <h3>{{ tech.name }}</h3>
+                <p><strong>Category:</strong> {{ tech.category }}</p>
+                <p><strong>Source:</strong> {{ tech.source }}</p>
+                <p><strong>Confidence:</strong> {{ tech.confidence }}</p>
+            </article>
+            {% endfor %}
+        {% else %}
+            <p>No technology indicators were detected in the response headers.</p>
+        {% endif %}
+
+        <p>
+            <small>
+                These are possible indicators, not confirmation of the
+                website's underlying technology.
+            </small>
+        </p>
+    </section>
+
+    <section class="checks-section">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">SECURITY CHECKS</span>
+                <h2>Detailed Findings</h2>
+                <p>Ten security configuration checks.</p>
+            </div>
+
+            <span class="history-count">
+                {{ data.results|length }} Checks
+            </span>
+        </div>
+
+        <div class="checks-grid">
+            {% for item in data.results %}
+            <article class="check-card">
+                <div class="check-card-header">
+                    <h3>{{ item.name }}</h3>
+
+                    <span class="risk-badge status-{{ item.status|lower }}">
+                        {{ item.status }}
+                    </span>
+                </div>
+
+                <div class="check-details">
+                    <span class="detail-label">Finding</span>
+                    <p>{{ item.details }}</p>
+                </div>
+
+                <div class="guidance-box">
+                    <span class="detail-label">Recommended Action</span>
+                    <p>{{ item.guidance }}</p>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="report-actions">
+        <div>
+            <h3>Need a copy of this report?</h3>
+            <p>Download your scan results as a PDF document.</p>
+        </div>
+
+        <a
+            href="{{ url_for('download', scan_id=data.id) }}"
+            class="btn btn-primary"
+        >
+            ↓ Download PDF Report
+        </a>
+    </section>
+
+    <div class="responsible-notice">
+        <strong>Responsible Security Testing</strong>
+        <p>
+            This report evaluates selected website security headers and
+            possible technology indicators. It is not a complete vulnerability
+            assessment or penetration test.
+        </p>
+    </div>
+
+    <footer class="dashboard-footer">
+        FixProof X — Intelligent Web Security Platform
+    </footer>
+
+</main>
+
+</body>
+</html>

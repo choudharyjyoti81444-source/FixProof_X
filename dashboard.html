@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard | FixProof X</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .technology-section,
+        .risk-summary-section {
+            background: #101a2b;
+            border: 1px solid rgba(41,217,245,.15);
+            border-radius: 14px;
+            padding: 22px;
+            margin: 25px 0;
+        }
+
+        .technology-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 18px;
+        }
+
+        .technology-item {
+            background: #0a1424;
+            border: 1px solid rgba(41,217,245,.15);
+            padding: 18px;
+            border-radius: 10px;
+            overflow-wrap: anywhere;
+        }
+
+        .technology-item h4 {
+            color: #29d9f5;
+            margin: 0 0 12px;
+        }
+
+        .technology-item p {
+            color: #aab8cc;
+            font-size: 13px;
+            margin: 7px 0;
+        }
+
+        .technology-empty {
+            color: #aab8cc;
+            padding: 15px 0;
+        }
+
+        .risk-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .risk-summary-item {
+            background: #0a1424;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .risk-summary-item strong {
+            display: block;
+            color: #29d9f5;
+            font-size: 22px;
+        }
+
+        .risk-summary-item span {
+            color: #aab8cc;
+            font-size: 12px;
+        }
+
+        /* COMPACT ANALYTICS */
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+            align-items: start;
+        }
+
+        .analytics-card {
+            height: 165px;
+            min-width: 0;
+            padding: 10px 12px;
+            box-sizing: border-box;
+            overflow: hidden;
+            background: #101a2b;
+            border: 1px solid rgba(41,217,245,.15);
+            border-radius: 12px;
+        }
+
+        .analytics-card h3 {
+            font-size: 13px;
+            margin: 5px 0 7px;
+            color: #ffffff;
+        }
+
+        .score-chart-wrap {
+            width: 100%;
+            height: 85px;
+            position: relative;
+        }
+
+        .score-chart-wrap canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .risk-chart-wrap {
+            width: 75px;
+            height: 75px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .risk-chart-wrap canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .chart-empty {
+            color: #aab8cc;
+            text-align: center;
+            font-size: 11px;
+            padding: 12px 5px;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .history-table {
+            width: 100%;
+            min-width: 650px;
+        }
+
+        @media (max-width: 900px) {
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .technology-section,
+            .risk-summary-section {
+                padding: 16px;
+            }
+
+            .analytics-card {
+                height: 165px;
+                padding: 10px;
+            }
+
+            .score-chart-wrap {
+                height: 85px;
+            }
+
+            .risk-chart-wrap {
+                width: 75px;
+                height: 75px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="dashboard-layout">
+
+    <aside class="sidebar">
+
+        <a href="{{ url_for('dashboard') }}" class="logo">
+            <span class="logo-icon">F</span>
+            FixProof <span class="accent">X</span>
+        </a>
+
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('dashboard') }}" class="active">Dashboard</a>
+            <a href="#scanner">Website Scanner</a>
+            <a href="#analytics">Analytics</a>
+            <a href="#history">Scan History</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            Intelligent Web Security Platform
+        </div>
+
+    </aside>
+
+    <main class="dashboard-main">
+
+        <header class="dashboard-header">
+            <div>
+                <span class="eyebrow">SECURITY CONTROL CENTER</span>
+                <h1>Welcome, {{ user_name }}!</h1>
+                <p>Monitor your website security from one place.</p>
+            </div>
+
+            <a href="{{ url_for('logout') }}" class="btn btn-outline">
+                Logout
+            </a>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- STATISTICS -->
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+                <span>Total Scans</span>
+                <h2>{{ total_scans }}</h2>
+            </div>
+
+            <div class="stat-card">
+                <span>Security Checks</span>
+                <h2>{{ security_checks }}</h2>
+            </div>
+
+            <div class="stat-card">
+                <span>Latest Security Score</span>
+                <h2>
+                    {% if latest_scan %}
+                        {{ latest_scan.score }}/100
+                    {% else %}
+                        0/100
+                    {% endif %}
+                </h2>
+            </div>
+
+            <div class="stat-card">
+                <span>Risk Level</span>
+                <h2>
+                    {% if latest_scan %}
+                        {{ latest_scan.risk_level }}
+                    {% else %}
+                        Pending
+                    {% endif %}
+                </h2>
+            </div>
+
+        </section>
+
+        <!-- WEBSITE SCANNER -->
+
+        <section class="scanner-section" id="scanner">
+
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">SMART SCANNER</span>
+                    <h2>Scan Your Website</h2>
+                    <p>Check website security configuration and response headers.</p>
+                </div>
+            </div>
+
+            <form action="{{ url_for('scan') }}" method="POST" class="scan-form">
+
+                <input
+                    type="url"
+                    name="url"
+                    placeholder="https://example.com"
+                    required
+                >
+
+                <button type="submit" class="btn btn-primary">
+                    Start Scan
+                </button>
+
+            </form>
+
+            <small>
+                Scan only websites you own or are authorized to assess.
+            </small>
+
+        </section>
+
+        <!-- TECHNOLOGY DETECTION -->
+
+        <section class="technology-section">
+
+            <span class="eyebrow">INTELLIGENT TECHNOLOGY DETECTOR</span>
+            <h2>Technology Detection</h2>
+
+            <p>
+                Possible website technologies identified from HTTP response headers.
+            </p>
+
+            {% if latest_scan and latest_scan.technologies %}
+
+                <div class="technology-grid">
+
+                    {% for tech in latest_scan.technologies %}
+
+                        <div class="technology-item">
+
+                            <h4>{{ tech.name }}</h4>
+
+                            <p>
+                                <strong>Category:</strong>
+                                {{ tech.category }}
+                            </p>
+
+                            <p>
+                                <strong>Source:</strong>
+                                {{ tech.source }}
+                            </p>
+
+                            <p>
+                                <strong>Confidence:</strong>
+                                {{ tech.confidence }}
+                            </p>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <p class="technology-empty">
+                    No technology indicators available.
+                    Complete a website scan to see possible technology indicators here.
+                </p>
+
+            {% endif %}
+
+            <p>
+                <small>
+                    Note: These are possible indicators, not confirmation
+                    of the website's underlying technology.
+                </small>
+            </p>
+
+        </section>
+
+        <!-- RISK SUMMARY -->
+
+        {% if latest_scan and latest_scan.risk_summary %}
+
+        <section class="risk-summary-section">
+
+            <span class="eyebrow">SMART RISK ENGINE</span>
+            <h2>Latest Risk Summary</h2>
+
+            <div class="risk-summary-grid">
+
+                {% for key, value in latest_scan.risk_summary.items() %}
+
+                    <div class="risk-summary-item">
+                        <strong>{{ value }}</strong>
+                        <span>{{ key }}</span>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+        {% endif %}
+
+        <!-- ANALYTICS -->
+
+        <section class="analytics-grid" id="analytics">
+
+            <div class="analytics-card">
+
+                <span class="eyebrow">SCAN ANALYTICS</span>
+                <h3>Security Score History</h3>
+
+                {% if scans %}
+
+                    <div class="score-chart-wrap">
+                        <canvas id="scoreChart"></canvas>
+                    </div>
+
+                {% else %}
+
+                    <p class="chart-empty">
+                        No scan data available yet.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+            <div class="analytics-card">
+
+                <span class="eyebrow">RISK DISTRIBUTION</span>
+                <h3>Risk Overview</h3>
+
+                {% if scans %}
+
+                    <div class="risk-chart-wrap">
+                        <canvas id="riskChart"></canvas>
+                    </div>
+
+                {% else %}
+
+                    <p class="chart-empty">
+                        Complete your first scan to view risk distribution.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+        <!-- SCAN HISTORY -->
+
+        <section class="history-section" id="history">
+
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">YOUR ACTIVITY</span>
+                    <h2>Scan History</h2>
+                    <p>View your previous website security reports.</p>
+                </div>
+
+                <span class="history-count">
+                    {{ scans|length }} Scans
+                </span>
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="history-table">
+
+                    <thead>
+                        <tr>
+                            <th>Website</th>
+                            <th>Score</th>
+                            <th>Risk Level</th>
+                            <th>Scan Date</th>
+                            <th>Report</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in scans %}
+
+                            <tr>
+                                <td>{{ item.url }}</td>
+                                <td>{{ item.score }}/100</td>
+
+                                <td>
+                                    <span class="risk-badge risk-{{ item.risk_level|lower }}">
+                                        {{ item.risk_level }}
+                                    </span>
+                                </td>
+
+                                <td>{{ item.created_at }}</td>
+
+                                <td>
+                                    <a href="{{ url_for('report', scan_id=item.id) }}">
+                                        View Report
+                                    </a>
+                                </td>
+                            </tr>
+
+                        {% else %}
+
+                            <tr>
+                                <td colspan="5">
+                                    No scans available. Start your first website scan.
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <footer class="dashboard-footer">
+            FixProof X — Intelligent Web Security Platform
+        </footer>
+
+    </main>
+
+</div>
+
+<script>
+    const scanRecords = {{ scans|tojson }};
+    const chartRecords = scanRecords.slice().reverse();
+
+    const chartLabels = chartRecords.map(
+        (scan, index) => "Scan " + (index + 1)
+    );
+
+    const chartScores = chartRecords.map(
+        scan => Number(scan.score) || 0
+    );
+
+    const riskCounts = {
+        Low: 0,
+        Medium: 0,
+        High: 0,
+        Critical: 0,
+        Unknown: 0
+    };
+
+    scanRecords.forEach(scan => {
+        const level = scan.risk_level || "Unknown";
+
+        if (Object.prototype.hasOwnProperty.call(riskCounts, level)) {
+            riskCounts[level]++;
+        } else {
+            riskCounts.Unknown++;
+        }
+    });
+
+    // SECURITY SCORE LINE CHART
+
+    const scoreCanvas = document.getElementById("scoreChart");
+
+    if (scoreCanvas) {
+        new Chart(scoreCanvas, {
+            type: "line",
+
+            data: {
+                labels: chartLabels,
+
+                datasets: [{
+                    label: "Security Score",
+                    data: chartScores,
+                    borderColor: "#29d9f5",
+                    backgroundColor: "rgba(41,217,245,0.12)",
+                    borderWidth: 2,
+                    pointRadius: 2,
+                    pointHoverRadius: 3,
+                    tension: 0.35,
+                    fill: true
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+
+                layout: {
+                    padding: 0
+                },
+
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 100,
+                        ticks: {
+                            stepSize: 50,
+                            color: "#aab8cc",
+                            font: {
+                                size: 8
+                            }
+                        },
+                        grid: {
+                            color: "rgba(170,184,204,0.10)"
+                        }
+                    },
+
+                    x: {
+                        ticks: {
+                            color: "#aab8cc",
+                            maxRotation: 0,
+                            font: {
+                                size: 8
+                            }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // RISK DISTRIBUTION DOUGHNUT CHART
+
+    const riskCanvas = document.getElementById("riskChart");
+
+    if (riskCanvas) {
+        new Chart(riskCanvas, {
+            type: "doughnut",
+
+            data: {
+                labels: Object.keys(riskCounts),
+
+                datasets: [{
+                    data: Object.values(riskCounts),
+                    backgroundColor: [
+                        "#22c55e",
+                        "#facc15",
+                        "#f97316",
+                        "#ef4444",
+                        "#64748b"
+                    ],
+                    borderColor: "#101a2b",
+                    borderWidth: 2,
+                    hoverOffset: 2
+                }]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: "72%",
+
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

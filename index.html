@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FixProof X | Web Security Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<header class="navbar">
+    <a href="{{ url_for('home') }}" class="logo">
+        <span class="logo-icon">F</span>
+        FixProof <span class="accent">X</span>
+    </a>
+
+    <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#workflow">How It Works</a>
+        <a href="#about">About</a>
+    </nav>
+
+    <div class="nav-actions">
+        <a href="{{ url_for('login') }}" class="btn btn-outline">Login</a>
+        <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
+    </div>
+</header>
+
+<main>
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <div class="status-label">
+                <span class="status-dot"></span>
+                INTELLIGENT WEB SECURITY PLATFORM
+            </div>
+
+            <h1>
+                From Security Warnings
+                <span class="accent">To Verified Fixes.</span>
+            </h1>
+
+            <p>
+                Understand your website's security configuration.
+                Detect missing security headers, review clear findings
+                and generate downloadable security reports.
+            </p>
+
+            <div class="hero-actions">
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-large">
+                    Get Started
+                </a>
+
+                <a href="#features" class="btn btn-outline btn-large">
+                    Explore Features
+                </a>
+            </div>
+
+            <div class="hero-note">
+                <span>✓</span> Five focused security checks
+                <span>✓</span> Saved scan history
+                <span>✓</span> PDF reports
+            </div>
+
+        </div>
+
+        <div class="hero-visual">
+
+            <div class="scan-window">
+
+                <div class="window-header">
+                    <div class="window-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <span>FIXPROOF X / SCANNER</span>
+                </div>
+
+                <div class="scan-content">
+
+                    <div class="scan-heading">
+                        <span>SECURITY OVERVIEW</span>
+                        <span class="live-status">DEMO</span>
+                    </div>
+
+                    <div class="score-area">
+                        <div class="score-circle">
+                            <strong>80</strong>
+                            <small>/100</small>
+                        </div>
+
+                        <div>
+                            <h3>Medium Risk</h3>
+                            <p>Illustrative result</p>
+                        </div>
+                    </div>
+
+                    <div class="check-row">
+                        <span>HTTPS Encryption</span>
+                        <span class="check-passed">PASSED</span>
+                    </div>
+
+                    <div class="check-row">
+                        <span>Content Security Policy</span>
+                        <span class="check-missing">MISSING</span>
+                    </div>
+
+                    <div class="check-row">
+                        <span>Frame Protection</span>
+                        <span class="check-passed">PASSED</span>
+                    </div>
+
+                    <div class="check-row">
+                        <span>HSTS Security</span>
+                        <span class="check-missing">MISSING</span>
+                    </div>
+
+                    <div class="check-row">
+                        <span>MIME Protection</span>
+                        <span class="check-passed">PASSED</span>
+                    </div>
+
+                    <p class="demo-note">
+                        Illustrative preview — not a live scan.
+                    </p>
+
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="features-section" id="features">
+
+        <div class="section-heading">
+            <span class="eyebrow">OUR CAPABILITIES</span>
+            <h2>Everything You Need to Review Website Security</h2>
+            <p>Simple tools that make selected security configuration findings easier to understand.</p>
+        </div>
+
+        <div class="feature-grid">
+
+            <div class="feature-card">
+                <div class="feature-icon">⌕</div>
+                <h3>Smart Scanner</h3>
+                <p>Check selected security headers of an authorized public website.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">◈</div>
+                <h3>Security Analysis</h3>
+                <p>View Passed, Missing and Failed security check statuses.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">▤</div>
+                <h3>Risk Score</h3>
+                <p>Understand results through a simple indicative score.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">▣</div>
+                <h3>Scan History</h3>
+                <p>Save and revisit your previous website scan results.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">⇩</div>
+                <h3>PDF Reports</h3>
+                <p>Generate downloadable reports with individual check findings.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">✓</div>
+                <h3>Fix Guidance</h3>
+                <p>Read basic next-step guidance for missing security headers.</p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="workflow-section" id="workflow">
+
+        <div class="section-heading">
+            <span class="eyebrow">SIMPLE WORKFLOW</span>
+            <h2>How FixProof X Works</h2>
+            <p>Four simple stages from login to report.</p>
+        </div>
+
+        <div class="workflow-grid">
+
+            <div class="workflow-card">
+                <span class="step-number">01</span>
+                <h3>Login</h3>
+                <p>Sign in to your FixProof X account.</p>
+            </div>
+
+            <div class="workflow-card">
+                <span class="step-number">02</span>
+                <h3>Scan</h3>
+                <p>Enter a public website you own or are permitted to assess.</p>
+            </div>
+
+            <div class="workflow-card">
+                <span class="step-number">03</span>
+                <h3>Review</h3>
+                <p>Understand the five security check results and score.</p>
+            </div>
+
+            <div class="workflow-card">
+                <span class="step-number">04</span>
+                <h3>Report</h3>
+                <p>Save scan history and download a PDF report.</p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="about-section" id="about">
+
+        <div class="about-content">
+            <span class="eyebrow">ABOUT THE PROJECT</span>
+            <h2>Making Basic Web Security Checks Easier</h2>
+            <p>
+                FixProof X is a web-based security configuration checker
+                built using Python and Flask. It helps users understand
+                selected HTTP security header findings through a dashboard,
+                indicative score and downloadable report.
+            </p>
+
+            <a href="{{ url_for('register') }}" class="btn btn-primary">
+                Create Your Account
+            </a>
+        </div>
+
+    </section>
+
+    <section class="notice-section">
+        <p>
+            <strong>Responsible Use:</strong>
+            Scan only public websites you own or have explicit permission
+            to assess. FixProof X performs selected configuration checks;
+            it is not a complete vulnerability scanner or penetration test.
+        </p>
+    </section>
+
+</main>
+
+<footer class="footer">
+    <a href="{{ url_for('home') }}" class="logo">
+        FixProof <span class="accent">X</span>
+    </a>
+
+    <p>Intelligent Web Security Platform</p>
+    <p>© 2026 FixProof X. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
